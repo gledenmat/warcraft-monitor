@@ -8,11 +8,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @JsonIgnoreProperties(ignoreUnknown = true) permet d'éviter les crashs
  * si l'API change et ajoute des champs inconnus.
  */
-@JsonIgnoreProperties(ignoreUnknown = true) // <--- AJOUT CRUCIAL
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record WowTokenResponse(
     @JsonProperty("last_updated_timestamp") long lastUpdatedTimestamp,
     @JsonProperty("price") long price
-    // J'ai supprimé le champ "val" qui causait l'erreur
 ) {
     public long getGoldPrice() {
         return price / 10000;

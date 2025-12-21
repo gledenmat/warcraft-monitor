@@ -2,7 +2,7 @@ package fr.gledenmat.warcraftmonitor.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-// Java 25 Record : concis, immuable, parfait pour la config
+// ConfigurationProperties pour lier les propriétés de configuration avec le prefix "blizzard"
 @ConfigurationProperties(prefix = "blizzard")
 public record BlizzardConfig(
     String clientId,

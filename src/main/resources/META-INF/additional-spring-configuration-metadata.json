@@ -21,6 +21,18 @@
       "type": "java.lang.String",
       "description": "Endpoint de l'API WoW Token (Region EU par défaut).",
       "defaultValue": "https://eu.api.blizzard.com/data/wow/token/index?namespace=dynamic-eu&locale=fr_FR"
+    },
+    {
+      "name": "warcraft.check-interval",
+      "type": "java.lang.Long",
+      "description": "Fréquence de vérification du prix en millisecondes (ex: 10000 pour 10s).",
+      "defaultValue": 1200000
+    },
+    {
+      "name": "warcraft.kafka.topic-name",
+      "type": "java.lang.String",
+      "description": "Nom du topic Kafka où envoyer le prix du token.",
+      "defaultValue": "warcraft-token-price"
     }
   ]
 }
