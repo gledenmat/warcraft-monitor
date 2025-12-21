@@ -1,4 +1,4 @@
-package fr.gledenmat.warcraft_monitor;
+package fr.gledenmat.warcraftmonitor;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

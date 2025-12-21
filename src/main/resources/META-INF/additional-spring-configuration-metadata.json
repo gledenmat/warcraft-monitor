@@ -1,0 +1,26 @@
+{
+  "properties": [
+    {
+      "name": "blizzard.client-id",
+      "type": "java.lang.String",
+      "description": "Identifiant public (Client ID) de l'application Battle.net."
+    },
+    {
+      "name": "blizzard.client-secret",
+      "type": "java.lang.String",
+      "description": "Clé secrète (Client Secret). À garder confidentiel."
+    },
+    {
+      "name": "blizzard.auth-url",
+      "type": "java.lang.String",
+      "description": "URL d'authentification OAuth2 pour obtenir le token d'accès.",
+      "defaultValue": "https://oauth.battle.net/token"
+    },
+    {
+      "name": "blizzard.api-url",
+      "type": "java.lang.String",
+      "description": "Endpoint de l'API WoW Token (Region EU par défaut).",
+      "defaultValue": "https://eu.api.blizzard.com/data/wow/token/index?namespace=dynamic-eu&locale=fr_FR"
+    }
+  ]
+}
