@@ -4,27 +4,34 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
+import fr.gledenmat.warcraftmonitor.controller.PriceController;
 
 @Service
 @Slf4j
 public class WarcraftTokenConsumer {
-    // C'est le "Facteur WebSocket" qui permet d'envoyer des messages aux clients connectés
+
     private final SimpMessagingTemplate messagingTemplate;
 
     public WarcraftTokenConsumer(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
 
-    /**
-     * Cette méthode est déclenchée automatiquement à chaque fois qu'un message
-     * arrive dans le topic Kafka 'warcraft-token-price'.
-     */
     @KafkaListener(topics = "${warcraft.kafka.topic-name}", groupId = "${spring.kafka.consumer.group-id}")
     public void consumeTokenPrice(String message) {
         log.info("📥 CONSUMER : Reçu de Kafka <{}>", message);
 
-        // On pousse le message vers tous les clients Web connectés sur le canal "/topic/price"
-        // Le Frontend Angular s'abonnera à ce canal.
+        // --- 1. MISE EN MÉMOIRE (Pour l'affichage immédiat au démarrage) ---
+        try {
+            // On convertit le texte "400000" en nombre réel
+            int price = Integer.parseInt(message);
+            // On le sauvegarde dans la "mémoire" du Controller
+            PriceController.LAST_KNOWN_PRICE = price;
+        } catch (NumberFormatException e) {
+            log.warn("Impossible de lire le prix reçu : {}", message);
+        }
+
+        // --- 2. DIFFUSION WEBSOCKET (Pour le temps réel) ---
+        // On pousse le message vers Angular
         messagingTemplate.convertAndSend("/topic/price", message);
         
         log.debug("📡 WEBSOCKET : Diffusé aux clients Angular");
