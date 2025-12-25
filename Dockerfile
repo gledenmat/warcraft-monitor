@@ -1,5 +1,5 @@
-# On part d'une version légère de Java 17
-FROM eclipse-temurin:17-jdk-alpine
+# Use the official Eclipse Temurin image with JDK 25 as the base image
+FROM eclipse-temurin:25-jdk
 
 WORKDIR /app
 
