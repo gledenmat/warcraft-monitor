@@ -22,10 +22,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // C'est l'URL de connexion WebSocket : http://localhost:8080/ws
+        // On définit le point d'entrée WebSocket
         registry.addEndpoint("/ws")
-                // IMPORTANT : On autorise tout le monde (CORS) pour le dev Angular (port 4200)
-                .setAllowedOriginPatterns("*")
-                .withSockJS(); // Active le fallback pour les vieux navigateurs
+                // IMPORTANT : On autorise Angular (port 4200) à se connecter
+                .setAllowedOriginPatterns("*");
+                // .withSockJS();  <-- ON A SUPPRIMÉ CETTE LIGNE !
     }
 }
