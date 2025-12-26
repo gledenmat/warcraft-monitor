@@ -2,6 +2,8 @@ package fr.gledenmat.warcraftmonitor.service;
 
 import fr.gledenmat.warcraftmonitor.config.BlizzardConfig;
 import fr.gledenmat.warcraftmonitor.dto.WowTokenResponse;
+import fr.gledenmat.warcraftmonitor.model.PricePoint;
+import fr.gledenmat.warcraftmonitor.repository.InMemoryPriceRepository;
 import lombok.extern.slf4j.Slf4j; 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -13,10 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
-
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
 
+//--- SERVICE BLIZZARD ---
 @Slf4j 
 @Service
 @EnableConfigurationProperties(BlizzardConfig.class)
@@ -24,26 +27,28 @@ public class BlizzardService {
 
     private final RestClient restClient;
     private final BlizzardConfig config;
+    private final InMemoryPriceRepository priceRepository; // ✅ 1. Le Repository
     
     // --- KAFKA ---
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final String topicName;
 
-    // Constructeur avec injection de Kafka et du nom du topic
+    // Constructeur avec injection de tout le monde
     public BlizzardService(RestClient.Builder builder, 
                            BlizzardConfig config,
                            KafkaTemplate<String, String> kafkaTemplate,
-                           @Value("${warcraft.kafka.topic-name}") String topicName) {
+                           @Value("${warcraft.kafka.topic-name}") String topicName,
+                           InMemoryPriceRepository priceRepository) { // ✅ Injection ici
         this.restClient = builder.build();
         this.config = config;
         this.kafkaTemplate = kafkaTemplate;
         this.topicName = topicName;
+        this.priceRepository = priceRepository;
     }
 
     private String getAccessToken() {
         log.debug("🔑 Récupération d'un nouveau Token OAuth Blizzard...");
         
-        // --- SECURITÉ : .trim() pour nettoyer les espaces du fichier de launch ---
         String auth = config.clientId().trim() + ":" + config.clientSecret().trim();
         String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
 
@@ -80,6 +85,10 @@ public class BlizzardService {
             if (response != null) {
                 long price = response.getGoldPrice();
                 log.info("💰 PRIX DU TOKEN : {} PO", price);
+                
+                // ✅ 2. SAUVEGARDE EN MÉMOIRE
+                // On crée un point avec l'heure actuelle et le prix
+                priceRepository.addPrice(new PricePoint(Instant.now(), price));
                 
                 // --- ENVOI KAFKA ---
                 String message = String.valueOf(price);
